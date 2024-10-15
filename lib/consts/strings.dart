@@ -55,6 +55,25 @@ const womenClothings = "Women Clothing",
     cellphone = "Cellphone & Tab",
     furniture = "Furniture";
   
+  //itens details
+  const video = "Video",
+    description = "Description",
+    reviews = "Reviews",
+    sellerpolicy = "Seller Policy",
+    returnpolity = "Return Policy",
+    shipping = "Shipping",
+    supportPolicy = "Support Policy",
+    warranty = "Warranty",
+    price = "Preço",
+    productsyoumaylike = "Products you may also like";
+
+// profile strings
+
+const whislist = "My Wishlist", orders = "My Orders", messages = "Messages";
+       
+
+
+
 
 
 
