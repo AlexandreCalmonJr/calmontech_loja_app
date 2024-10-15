@@ -1,18 +1,45 @@
+// Para todos os subprojetos dentro deste projeto
 allprojects {
+    // Repositórios onde as dependências são buscadas
     repositories {
-        google()
-        mavenCentral()
+        google() // Repositório do Google para bibliotecas Android
+        mavenCentral() // Repositório central do Maven
     }
 }
 
+// Define a pasta raiz para os arquivos de build
 rootProject.buildDir = "../build"
+
+// Configurações para todos os subprojetos
 subprojects {
+    // Define a pasta de build para cada subprojeto
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+
+// Define dependência de avaliação para o subprojeto ":app"
 subprojects {
     project.evaluationDependsOn(":app")
 }
 
+// Cria uma tarefa chamada "clean" que exclui a pasta de build
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
+}
+
+// Mais configurações para subprojetos
+subprojects { 
+    // Define variáveis de extensão
+    // Defina as propriedades SDK e Build Tools no nível do projeto raiz
+ext {
+    compileSdkVersion = 33 // ou a versão de SDK que você deseja usar
+    minSdkVersion = 23 // ou a versão mínima de SDK compatível
+    targetSdkVersion = 33 // ou a versão de SDK alvo
+    buildToolsVersion = "33.0.0" // ou a versão das Build Tools que você está utilizando
+}
+
+    // Executa após a avaliação do subprojeto
+    
+            
+        
+    
 }

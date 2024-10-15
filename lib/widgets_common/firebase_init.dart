@@ -7,5 +7,5 @@ const FirebaseOptions firebaseOptions = FirebaseOptions(
   projectId: "calmontechapp",
   storageBucket: "calmontechapp.appspot.com",
   androidClientId: "97604060836-android.apps.googleusercontent.com",
-  databaseURL: "https://calmontechapp-default-rtdb.firebaseio.com", // Add if necessary for Realtime Database
+  databaseURL: "https://calmontechapp-default-rtdb.firebaseio.com/", // Add if necessary for Realtime Database
 );
