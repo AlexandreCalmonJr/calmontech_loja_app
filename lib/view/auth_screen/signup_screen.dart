@@ -39,17 +39,25 @@ class _SignupScreenState extends State<SignupScreen> {
             15.heightBox,
             Column(children: [
               customTextField(
-                  hint: emailHint, title: name, controller: nameController),
+                  hint: emailHint,
+                  title: name,
+                  controller: nameController,
+                  isPass: false),
               customTextField(
-                  hint: emailHint, title: email, controller: emailController),
+                  hint: emailHint,
+                  title: email,
+                  controller: emailController,
+                  isPass: false),
               customTextField(
                   hint: passwordHint,
                   title: password,
-                  controller: passwordController),
+                  controller: passwordController,
+                  isPass: true),
               customTextField(
                   hint: passwordHint,
                   title: retypePassword,
-                  controller: passwordController),
+                  controller: passwordController,
+                  isPass: true),
               TextButton(onPressed: () {}, child: forgetPass.text.make()),
               8.heightBox,
               Row(
@@ -106,24 +114,32 @@ class _SignupScreenState extends State<SignupScreen> {
                   onPress: () async {
                     if (isCheck != false) {
                       try {
-                        await controller
-                            .signMethod(
+                        // Chama o método de criação de conta
+                        var signInResult = await controller.signMethod(
                           email: emailController.text,
                           password: passwordController.text,
                           context: context,
-                        )
-                            .then((value) {
-                          return controller.storeUserData(
-                              name: nameController.text,
-                              password: passwordController.text,
-                              email: emailController.text);
-                        }).then((value) => {
-                                  // ignore: use_build_context_synchronously
-                                  VxToast.show(context, msg: loggedin),
-                                  Get.offAll(() => const Home())
-                                });
+                        );
+
+                        // Verifica se a criação foi bem-sucedida
+                        if (signInResult != null) {
+                          // Armazena os dados do usuário
+                          await controller.storeUserData(
+                            name: nameController.text,
+                            password: passwordController.text,
+                            email: emailController.text,
+                          );
+
+                          // Exibe mensagem de sucesso e navega para a tela Home
+                          VxToast.show(context, msg: loggedin);
+                          Get.offAll(() => const Home());
+                        } else {
+                          // Trate o caso onde o signInResult é null
+                          VxToast.show(context, msg: "Falha ao criar a conta.");
+                        }
                       } catch (e) {
-                        auth.signOut();
+                        // Em caso de erro, faz logout e exibe mensagem
+                        await auth.signOut();
                         VxToast.show(context, msg: e.toString());
                       }
                     }

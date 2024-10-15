@@ -32,8 +32,8 @@ class _LoginScreenState extends State<LoginScreen> {
               15.heightBox,
               Column(
                 children: [
-                  customTextField(hint: emailHint,title: email),
-                  customTextField(hint: passwordHint,title: password),
+                  customTextField(hint: emailHint,title: email,isPass:false),
+                  customTextField(hint: passwordHint,title: password,isPass:false),
                   TextButton(onPressed: (){}, child: forgetPass.text.make()),
                   5.heightBox,
                   ourButton(color: redColor, title: login, textColor: whiteColor, onPress: () {

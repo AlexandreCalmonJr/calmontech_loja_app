@@ -8,6 +8,15 @@ import 'consts/consts.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: "AIzaSyDeRT28xq8ii2KmfDL92hSUZDIeQveIIE8",
+      appId: "1:97604060836:android:0386ce2fd62805c05a4831",
+      messagingSenderId: "97604060836",
+      projectId: "calmontechapp",
+      storageBucket: "calmontechapp.appspot.com",
+      androidClientId: "97604060836-android.apps.googleusercontent.com",
+      databaseURL: "https://calmontechapp-default-rtdb.firebaseio.com/", // Add if necessary for Realtime Database
+    ),
   );
   runApp(const MyApp());
 }
