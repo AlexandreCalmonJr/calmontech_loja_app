@@ -1,5 +1,7 @@
 import 'package:emart_app/consts/consts.dart';
+import 'package:emart_app/controllers/auth_controller.dart';
 import 'package:emart_app/view/auth_screen/login_screen.dart';
+import 'package:emart_app/view/home_screen/home.dart';
 import 'package:emart_app/widgets_common/applogo_wigdet.dart';
 import 'package:emart_app/widgets_common/bg_widget.dart';
 import 'package:emart_app/widgets_common/custom_textfield.dart';
@@ -16,7 +18,11 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   bool? isCheck = false;
-
+  var controller = Get.put(AuthController());
+  var nameController = TextEditingController();
+  var emailController = TextEditingController();
+  var passwordController = TextEditingController();
+  var retypePasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +38,18 @@ class _SignupScreenState extends State<SignupScreen> {
             "Cadastre no $appname".text.fontFamily(bold).white.size(18).make(),
             15.heightBox,
             Column(children: [
-              customTextField(hint: emailHint, title: name),
-              customTextField(hint: emailHint, title: email),
-              customTextField(hint: passwordHint, title: password),
-              customTextField(hint: passwordHint, title: retypePassword),
+              customTextField(
+                  hint: emailHint, title: name, controller: nameController),
+              customTextField(
+                  hint: emailHint, title: email, controller: emailController),
+              customTextField(
+                  hint: passwordHint,
+                  title: password,
+                  controller: passwordController),
+              customTextField(
+                  hint: passwordHint,
+                  title: retypePassword,
+                  controller: passwordController),
               TextButton(onPressed: () {}, child: forgetPass.text.make()),
               8.heightBox,
               Row(
@@ -86,14 +100,35 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               10.heightBox,
               ourButton(
-                      color: isCheck == true ? redColor : lightGrey,
-                      title: signup,
-                      textColor: whiteColor,
-                      onPress: () {})
-                  .box
-                  .width(context.screenWidth - 50)
-                  .make(),
-               10.heightBox,   
+                  color: isCheck == true ? redColor : lightGrey,
+                  title: signup,
+                  textColor: whiteColor,
+                  onPress: () async {
+                    if (isCheck != false) {
+                      try {
+                        await controller
+                            .signMethod(
+                          email: emailController.text,
+                          password: passwordController.text,
+                          context: context,
+                        )
+                            .then((value) {
+                          return controller.storeUserData(
+                              name: nameController.text,
+                              password: passwordController.text,
+                              email: emailController.text);
+                        }).then((value) => {
+                                  VxToast.show(context, msg: loggedin),
+                                  Get.offAll(() => const Home())
+                                });
+                      } catch (e) {
+                        auth.signOut();
+                        VxToast.show(context, msg: e.toString());
+                      }
+                    }
+                    // Navigate to the next screen
+                  }).box.width(context.screenWidth - 50).make(),
+              10.heightBox,
               RichText(
                   text: const TextSpan(children: [
                 TextSpan(
@@ -110,8 +145,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     color: redColor,
                   ),
                 ),
-              ])
-              ).onTap(() {
+              ])).onTap(() {
                 Get.back(result: const LoginScreen());
               }),
             ])
