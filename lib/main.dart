@@ -6,9 +6,10 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'consts/consts.dart';
 
 Future<void> main() async {
-  runApp(const MyApp());
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
