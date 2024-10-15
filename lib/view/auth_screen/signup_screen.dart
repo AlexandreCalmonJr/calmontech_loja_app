@@ -118,6 +118,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               password: passwordController.text,
                               email: emailController.text);
                         }).then((value) => {
+                                  // ignore: use_build_context_synchronously
                                   VxToast.show(context, msg: loggedin),
                                   Get.offAll(() => const Home())
                                 });
