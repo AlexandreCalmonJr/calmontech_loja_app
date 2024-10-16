@@ -1,7 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emart_app/consts/consts.dart';
 import 'package:emart_app/consts/lists.dart';
+import 'package:emart_app/controllers/profile_controller.dart';
+import 'package:emart_app/services/firestore_services.dart';
 import 'package:emart_app/view/auth_screen/login_screen.dart';
 import 'package:emart_app/view/profile_screen/components/details_card.dart';
+import 'package:emart_app/view/profile_screen/edit_profile_screen.dart';
 import 'package:emart_app/widgets_common/bg_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,12 +15,24 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var controller = Get.put(ProfileController());
+
     return bgWidget(
-      child: Scaffold(
-          body: SafeArea(
-              // ignore: avoid_unnecessary_containers
-              child: Container(
-                  
+        child: Scaffold(
+            body: StreamBuilder(
+                stream: FirestoreServices.getUser(auth.currentUser!.uid),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return const Center(
+                          child: CircularProgressIndicator(                           
+                            valueColor: AlwaysStoppedAnimation(redColor),
+                          ),
+                        );
+                      }
+                      else {
+                        var data = snapshot.data!.docs[0];
+                        return SafeArea(
                   child: Column(
                     children: [
                       //edit profile button
@@ -25,7 +41,10 @@ class ProfileScreen extends StatelessWidget {
                         child: const Align(
                                 alignment: Alignment.topRight,
                                 child: Icon(Icons.edit, color: whiteColor))
-                            .onTap(() {}),
+                            .onTap((
+                            ) {
+                              Get.to(() => const EditProfileScreen());
+                            }),
                       ),
 
 // user detalis action
@@ -43,13 +62,13 @@ class ProfileScreen extends StatelessWidget {
                                 child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                "Calmon Tech"
+                                "${data['name']}"
                                     .text
                                     .fontFamily(semibold)
                                     .white
                                     .make(),
                                 5.heightBox,
-                                "calmontech@gmail.com".text.white.make(),
+                                "${data['email']}".text.white.make(),
                               ],
                             )),
                             OutlinedButton(
@@ -69,15 +88,15 @@ class ProfileScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           detailsCard(
-                              count: "00",
+                              count: data['cart_count'],
                               title: "in your cart",
                               width: context.screenWidth / 3.2),
                           detailsCard(
-                              count: "32",
+                              count: data['wishlist_count'],
                               title: "in your whishlist",
                               width: context.screenWidth / 3.2),
                           detailsCard(
-                              count: "675",
+                              count: data['order_count'],
                               title: "your orders",
                               width: context.screenWidth / 3.2),
                         ],
@@ -118,7 +137,10 @@ class ProfileScreen extends StatelessWidget {
                           .color(redColor)
                           .make(),
                     ],
-                  )))),
-    );
+                  ));
+
+                      }
+                 
+                })));
   }
 }

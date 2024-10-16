@@ -44,7 +44,6 @@ class AuthController extends GetxController with StateMixin<User> {
       );
     } on FirebaseAuthException {
       // Exibe a mensagem de erro no toast
-      
     }
 
     // Retorna o UserCredential (pode ser null se a criação falhar)
@@ -56,7 +55,14 @@ class AuthController extends GetxController with StateMixin<User> {
     DocumentReference store =
         firestore.collection(usersCollection).doc(auth.currentUser!.uid);
     store.set(
-        {'name': name, 'password': password, 'email': email, 'imageUrl': ''});
+        {'name': name, 
+        'password': password, 
+        'email': email, 
+        'imageUrl': '',
+        'cart_count' :"00",
+        'wishlist_count' :"00",
+        'order_count' :"00",
+        });
   }
 
   //cadastro entrada metodo
