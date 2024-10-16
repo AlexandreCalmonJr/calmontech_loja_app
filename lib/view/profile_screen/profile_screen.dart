@@ -43,7 +43,9 @@ class ProfileScreen extends StatelessWidget {
                                 child: Icon(Icons.edit, color: whiteColor))
                             .onTap((
                             ) {
-                              Get.to(() => const EditProfileScreen());
+                              Get.to(() => EditProfileScreen(
+                                    data: data,
+                              ));
                             }),
                       ),
 

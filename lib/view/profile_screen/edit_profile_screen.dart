@@ -9,7 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class EditProfileScreen extends StatelessWidget {
-  const EditProfileScreen({super.key});
+  final dynamic data;
+  const EditProfileScreen({super.key, this.data});
 
   @override
   Widget build(BuildContext context) {
