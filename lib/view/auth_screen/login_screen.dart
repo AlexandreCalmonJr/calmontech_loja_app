@@ -32,78 +32,88 @@ class LoginScreen extends StatelessWidget {
                 .size(18)
                 .make(),
             15.heightBox,
-            Column(children: [
-              customTextField(
-                  hint: emailHint,
-                  title: email,
-                  isPass: false,
-                  controller: controller.emailController),
-              customTextField(
-                  hint: passwordHint,
-                  title: password,
-                  isPass: false,
-                  controller: controller.passwordController),
-              TextButton(onPressed: () {}, child: forgetPass.text.make()),
-              5.heightBox,
-              ourButton(
-                  color: redColor,
-                  title: login,
-                  textColor: whiteColor,
-                  onPress: () async {
-                    // Chama o método de login e aguarda o resultado
-                    var userCredential =
-                        await controller.loginMethod(context: context);
+            Obx(
+              () => Column(children: [
+                customTextField(
+                    hint: emailHint,
+                    title: email,
+                    isPass: false,
+                    controller: controller.emailController),
+                customTextField(
+                    hint: passwordHint,
+                    title: password,
+                    isPass: false,
+                    controller: controller.passwordController),
+                TextButton(onPressed: () {}, child: forgetPass.text.make()),
+                5.heightBox,
+                controller.isLoading.value
+                    ? const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(redColor),
+                      )
+                    :
+                ourButton(
+                    color: redColor,
+                    title: login,
+                    textColor: whiteColor,
+                    onPress: () async {
+                      controller.isLoading(true);
 
-                    // Verifica se o login foi bem-sucedido
-                    if (userCredential != null) {
-                      // Exibe mensagem de sucesso
-                      VxToast.show(context, msg: loggedin);
+                      // Chama o método de login e aguarda o resultado
+                      var userCredential =
+                          await controller.loginMethod(context: context);
 
-                      // Redireciona para a tela Home
-                      Get.offAll(() => const Home());
-                    } else {
-                      // Tratar caso de falha no login, se necessário (opcional)
-                      VxToast.show(context,
-                          msg: "Falha no login. Verifique suas credenciais.");
-                    }
-                  }).box.width(context.screenWidth - 50).make(),
-              5.heightBox,
-              createNewAccount.text.color(fontGrey).make(),
-              5.heightBox,
-              ourButton(
-                  color: lightGrey,
-                  title: signup,
-                  textColor: redColor,
-                  onPress: () {
-                    Get.to(() => const SignupScreen());
-                  }).box.width(context.screenWidth - 50).make(),
-              15.heightBox,
-              loginWith.text.color(fontGrey).make(),
-              5.heightBox,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                    3,
-                    (index) => Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: CircleAvatar(
-                            backgroundColor: lightGrey,
-                            radius: 25,
-                            child: Image.asset(
-                              socialIconList[index],
-                              width: 30,
+                      // Verifica se o login foi bem-sucedido
+                      if (userCredential != null) {
+                        // Exibe mensagem de sucesso
+                        VxToast.show(context, msg: loggedin);
+
+                        // Redireciona para a tela Home
+                        Get.offAll(() => const Home());
+                      } else {
+                        controller.isLoading(false);
+                        // Tratar caso de falha no login, se necessário (opcional)
+                        VxToast.show(context,
+                            msg: "Falha no login. Verifique suas credenciais.");
+                      }
+                    }).box.width(context.screenWidth - 50).make(),
+                5.heightBox,
+                createNewAccount.text.color(fontGrey).make(),
+                5.heightBox,
+                ourButton(
+                    color: lightGrey,
+                    title: signup,
+                    textColor: redColor,
+                    onPress: () {
+                      Get.to(() => const SignupScreen());
+                    }).box.width(context.screenWidth - 50).make(),
+                15.heightBox,
+                loginWith.text.color(fontGrey).make(),
+                5.heightBox,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                      3,
+                      (index) => Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CircleAvatar(
+                              backgroundColor: lightGrey,
+                              radius: 25,
+                              child: Image.asset(
+                                socialIconList[index],
+                                width: 30,
+                              ),
                             ),
-                          ),
-                        )),
-              ),
-            ])
-                .box
-                .white
-                .rounded
-                .padding(const EdgeInsets.all(16))
-                .width(context.screenWidth - 70)
-                .shadowSm
-                .make(),
+                          )),
+                ),
+              ])
+                  .box
+                  .white
+                  .rounded
+                  .padding(const EdgeInsets.all(16))
+                  .width(context.screenWidth - 70)
+                  .shadowSm
+                  .make(),
+            ),
           ],
         ),
       ),

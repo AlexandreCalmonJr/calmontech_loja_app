@@ -9,6 +9,9 @@ class AuthController extends GetxController with StateMixin<User> {
   final auth = FirebaseAuth.instance;
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
+  var isLoading = false.obs;
+  
+  
 
   // login metodo
   Future<UserCredential?> loginMethod({required BuildContext context}) async {
@@ -56,7 +59,7 @@ class AuthController extends GetxController with StateMixin<User> {
     DocumentReference store =
         firestore.collection(usersCollection).doc(auth.currentUser!.uid);
     store.set(
-        {'name': name, 'password': password, 'email': email, 'imageUrl': ''});
+        {'name': name, 'password': password, 'email': email, 'imageUrl': '','id': auth.currentUser!.uid});
   }
 
   //cadastro entrada metodo
