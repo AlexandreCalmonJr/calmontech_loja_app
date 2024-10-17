@@ -23,7 +23,9 @@ class EditProfileScreen extends StatelessWidget {
         child: Scaffold(
             resizeToAvoidBottomInset: false,
             appBar: AppBar(),
-            body: Obx(() => Column(mainAxisSize: MainAxisSize.min, children: [
+            body: Obx(() => Column(
+            mainAxisSize: MainAxisSize.min, 
+            children: [
                 controller.profileImgPath.isEmpty
                     ? Image.asset(
                         imgProfile2,
@@ -80,6 +82,7 @@ class EditProfileScreen extends StatelessWidget {
                           password: controller.passwordController.text,
                         );
                         
+                        // ignore: use_build_context_synchronously
                         VxToast.show(context, msg: "Atualizando");
                         
                         
