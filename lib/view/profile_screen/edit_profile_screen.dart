@@ -15,9 +15,13 @@ class EditProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var controller = Get.find<ProfileController>();
+   
+    
 
+    
     return bgWidget(
         child: Scaffold(
+            resizeToAvoidBottomInset: false,
             appBar: AppBar(),
             body: Obx(() => Column(mainAxisSize: MainAxisSize.min, children: [
                 controller.profileImgPath.isEmpty
@@ -44,23 +48,44 @@ class EditProfileScreen extends StatelessWidget {
                 const Divider(),
                 10.heightBox,
                 customTextField(
+                  controller: controller.nameController,
                   hint: nameHint,
                   title: name,
                   isPass: false,
                 ),
                 customTextField(
+                  controller: controller.passwordController,
                   hint: passwordHint,
                   title: password,
                   isPass: true,
                 ),
                 20.heightBox,
+                controller.isloading.value
+                    ? const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(redColor),
+                      )
+                    :
                 SizedBox(
                   width: double.infinity,
                   child: ourButton(
                       color: redColor,
                       title: "Salvar",
                       textColor: whiteColor,
-                      onPress: () {}),
+                      onPress: () async {        
+                        controller.isloading(true);            
+                        await controller.uploadProfileImage();
+                        await controller.updateProfile(
+                          imgUrl: controller.profileImagemLink,
+                          name: controller.nameController.text,
+                          password: controller.passwordController.text,
+                        );
+                        
+                        VxToast.show(context, msg: "Atualizando");
+                        
+                        
+
+
+                      }),
                 ),
               ])
                   .box
