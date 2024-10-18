@@ -1,0 +1,76 @@
+{
+    "categorias": [
+        {
+            "nome": "Vestidos Femininos",
+            "subcategorias": [
+                "Casamento & Eventos",
+                "Blusas & Conjuntos",
+                "Relógios"
+            ]
+        },
+        {
+            "nome": "Roupas Masculinas",
+            "subcategorias": [
+                "Casacos & Jaquetas",
+                "Trajes Formais",
+                "Acessórios"
+            ]
+        },
+        {
+            "nome": "Acessórios para Computador",
+            "subcategorias": [
+                "Notebook",
+                "PC Gamer",
+                "Equipamentos Oficiais"
+            ]
+        },
+        {
+            "nome": "Automóveis",
+            "subcategorias": [
+                "Peças",
+                "Acessórios",
+                "Vestido Infantil"
+            ]
+        },
+        {
+            "nome": "Crianças",
+            "subcategorias": [
+                "Roupas para Bebês",
+                "Sapatos & Bolsas",
+                "Vestido Infantil"
+            ]
+        },
+        {
+            "nome": "Esportes",
+            "subcategorias": [
+                "Ciclismo",
+                "Tênis",
+                "Natação"
+            ]
+        },
+        {
+            "nome": "Joalheria",
+            "subcategorias": [
+                "Anéis",
+                "Colares",
+                "Pulseiras"
+            ]
+        },
+        {
+            "nome": "Celulares & Tablets",
+            "subcategorias": [
+                "Smartphones",
+                "Capas & Acessórios",
+                "Tablets"
+            ]
+        },
+        {
+            "nome": "Móveis",
+            "subcategorias": [
+                "Sofás",
+                "Mesas & Cadeiras",
+                "Camas"
+            ]
+        }
+    ]
+}

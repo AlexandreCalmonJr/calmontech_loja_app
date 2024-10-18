@@ -71,7 +71,7 @@ const womenClothings = "Women Clothing",
 
 // profile strings
 
-const whislist = "My Wishlist", orders = "My Orders", messages = "Messages";
+const whislist = "My Wishlist", orders = "My Orders", messages = "Messages", oldpass = "Senha Antiga", newpass = "Nova Senha";
        
 
 

@@ -15,17 +15,13 @@ class EditProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var controller = Get.find<ProfileController>();
-   
-    
 
-    
     return bgWidget(
         child: Scaffold(
             resizeToAvoidBottomInset: false,
             appBar: AppBar(),
-            body: Obx(() => Column(
-            mainAxisSize: MainAxisSize.min, 
-            children: [
+            body: Obx(
+              () => Column(mainAxisSize: MainAxisSize.min, children: [
                 controller.profileImgPath.isEmpty
                     ? Image.asset(
                         imgProfile2,
@@ -56,9 +52,15 @@ class EditProfileScreen extends StatelessWidget {
                   isPass: false,
                 ),
                 customTextField(
-                  controller: controller.passwordController,
+                  controller: controller.oldpasswordController,
                   hint: passwordHint,
-                  title: password,
+                  title: oldpass,
+                  isPass: true,
+                ),
+                customTextField(
+                  controller: controller.newpasswordController,
+                  hint: passwordHint,
+                  title: newpass,
                   isPass: true,
                 ),
                 20.heightBox,
@@ -66,30 +68,44 @@ class EditProfileScreen extends StatelessWidget {
                     ? const CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation(redColor),
                       )
-                    :
-                SizedBox(
-                  width: double.infinity,
-                  child: ourButton(
-                      color: redColor,
-                      title: "Salvar",
-                      textColor: whiteColor,
-                      onPress: () async {        
-                        controller.isloading(true);            
-                        await controller.uploadProfileImage();
-                        await controller.updateProfile(
-                          imgUrl: controller.profileImagemLink,
-                          name: controller.nameController.text,
-                          password: controller.passwordController.text,
-                        );
-                        
-                        // ignore: use_build_context_synchronously
-                        VxToast.show(context, msg: "Atualizando");
-                        
-                        
+                    : SizedBox(
+                        width: double.infinity,
+                        child: ourButton(
+                            color: redColor,
+                            title: "Salvar",
+                            textColor: whiteColor,
+                            onPress: () async {
+                              controller.isloading(true);
 
+                              //if image is not selected
+                              if (controller.profileImgPath.isNotEmpty) {
+                                await controller.uploadProfileImage();
+                              } else {
+                                controller.profileImagemLink = data['img'];
+                              }
+// if old password matched
+                              if (data['password'] ==
+                                  controller.oldpasswordController.text) {
+                                await controller.changeAuthPassword(
+                                  email: data['email'],
+                                  password:
+                                      controller.oldpasswordController.text,
+                                  newpassword:
+                                      controller.newpasswordController.text,
+                                );
+                                await controller.updateProfile(
+                                  imgUrl: controller.profileImagemLink,
+                                  name: controller.nameController.text,
+                                  password:
+                                      controller.newpasswordController.text,
+                                );
+                                // ignore: use_build_context_synchronously
+                                VxToast.show(context, msg: "Atualizando");
+                                controller.isloading(false);
 
-                      }),
-                ),
+                              }
+                            }),
+                      ),
               ])
                   .box
                   .white

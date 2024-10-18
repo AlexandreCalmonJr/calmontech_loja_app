@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emart_app/consts/consts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,6 +18,9 @@ class ProfileController extends GetxController {
 
   var nameController = TextEditingController();
   var passwordController = TextEditingController();
+  var newpasswordController = TextEditingController();
+  var oldpasswordController = TextEditingController();
+
   var emailController = TextEditingController();
   var phoneController = TextEditingController();
   var addressController = TextEditingController();
@@ -66,14 +70,28 @@ class ProfileController extends GetxController {
 
     );
     isloading(false);
-    
+  }
 
-
-
-
+  changeAuthPassword({
+    email,
+    password,
+    newpassword
+  }
+  ) async {
+    final cred = EmailAuthProvider.credential(
+      email: email, password: password
+    );
+    await auth.currentUser!.reauthenticateWithCredential(cred).then((value){
+      auth.currentUser!.updatePassword(newpassword);
+    }).catchError((error){
+      print(error.toString());
+    });
 
 
 
   }
+
+
+
 
 }
