@@ -21,92 +21,98 @@ class EditProfileScreen extends StatelessWidget {
             resizeToAvoidBottomInset: false,
             appBar: AppBar(),
             body: Obx(
-              () => Column(mainAxisSize: MainAxisSize.min, children: [
-                controller.profileImgPath.isEmpty
-                    ? Image.asset(
-                        imgProfile2,
-                        width: 100,
-                        fit: BoxFit.cover,
-                      ).box.roundedFull.clip(Clip.antiAlias).make()
-                    : Image.file(
-                        File(
-                          controller.profileImgPath.value,
+              () => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  controller.profileImgPath.isEmpty
+                      ? Image.asset(
+                          imgProfile2,
+                          width: 100,
+                          fit: BoxFit.cover,
+                        ).box.roundedFull.clip(Clip.antiAlias).make()
+                      : Image.file(
+                          File(controller.profileImgPath.value),
+                          width: 100,
+                          fit: BoxFit.cover,
+                        ).box.roundedFull.clip(Clip.antiAlias).make(),
+                  10.heightBox,
+                  ourButton(
+                      color: redColor,
+                      title: "Mudar Imagem",
+                      textColor: whiteColor,
+                      onPress: () {
+                        controller.changeImage(context);
+                      }),
+                  const Divider(),
+                  10.heightBox,
+                  customTextField(
+                    controller: controller.nameController,
+                    hint: nameHint,
+                    title: name,
+                    isPass: false,
+                  ),
+                  const Divider(),
+                  10.heightBox,
+                  customTextField(
+                    controller: controller.oldpasswordController,
+                    hint: passwordHint,
+                    title: oldpass,
+                    isPass: true,
+                  ),
+                  customTextField(
+                    controller: controller.newpasswordController,
+                    hint: passwordHint,
+                    title: newpass,
+                    isPass: true,
+                  ),
+                  20.heightBox,
+                  controller.isloading.value
+                      ? const CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(redColor),
+                        )
+                      : SizedBox(
+                          width: double.infinity,
+                          child: ourButton(
+                              color: redColor,
+                              title: "Salvar",
+                              textColor: whiteColor,
+                              onPress: () async {
+                                controller.isloading(true);
+
+                                // Se a imagem foi alterada, faça o upload
+                               // Compactando lógica de verificação da imagem e senha
+if (controller.profileImgPath.isNotEmpty) {
+  await controller.uploadProfileImage();
+} else {
+  controller.profileImagemLink.value = data['img'];  // Correção: Usando .value
+}
+
+// Verificação e atualização do perfil
+if (data['password'] == controller.oldpasswordController.text) {
+  await controller.changeAuthPassword(
+    email: data['email'],
+    password: controller.oldpasswordController.text,
+    newpassword: controller.newpasswordController.text,
+  );
+
+  await controller.updateProfile(
+    img: controller.profileImagemLink.value,
+    name: controller.nameController.text,
+    password: controller.newpasswordController.text,
+  );
+
+  VxToast.show(context, msg: "Atualizado");
+} else {
+  VxToast.show(context, msg: "Não Atualizado");
+}
+
+// Finalizando carregamento
+controller.isloading(false);
+
+                              }),
                         ),
-                        width: 100,
-                        fit: BoxFit.cover,
-                      ).box.roundedFull.clip(Clip.antiAlias).make(),
-                10.heightBox,
-                ourButton(
-                    color: redColor,
-                    title: "Mudar Imagem",
-                    textColor: whiteColor,
-                    onPress: () {
-                      controller.changeImage(context);
-                    }),
-                const Divider(),
-                10.heightBox,
-                customTextField(
-                  controller: controller.nameController,
-                  hint: nameHint,
-                  title: name,
-                  isPass: false,
-                ),
-                customTextField(
-                  controller: controller.oldpasswordController,
-                  hint: passwordHint,
-                  title: oldpass,
-                  isPass: true,
-                ),
-                customTextField(
-                  controller: controller.newpasswordController,
-                  hint: passwordHint,
-                  title: newpass,
-                  isPass: true,
-                ),
-                20.heightBox,
-                controller.isloading.value
-                    ? const CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(redColor),
-                      )
-                    : SizedBox(
-                        width: double.infinity,
-                        child: ourButton(
-                            color: redColor,
-                            title: "Salvar",
-                            textColor: whiteColor,
-                            onPress: () async {
-                              controller.isloading(true);
-
-                              //if image is not selected
-                              if (controller.profileImgPath.isNotEmpty) {
-                                await controller.uploadProfileImage();
-                              } else {
-                                controller.profileImagemLink = data['img'];
-                              }
-// if old password matched
-                              if (data['password'] ==
-                                  controller.oldpasswordController.text) {
-                                await controller.changeAuthPassword(
-                                  email: data['email'],
-                                  password:
-                                      controller.oldpasswordController.text,
-                                  newpassword:
-                                      controller.newpasswordController.text,
-                                );
-                                await controller.updateProfile(
-                                  imgUrl: controller.profileImagemLink,
-                                  name: controller.nameController.text,
-                                  password:
-                                      controller.newpasswordController.text,
-                                );
-                                // ignore: use_build_context_synchronously
-                                VxToast.show(context, msg: "Atualizando");
-                                controller.isloading(false);
-
-                              }
-                            }),
-                      ),
-              ])
+                ],
+              )
                   .box
                   .white
                   .shadowSm

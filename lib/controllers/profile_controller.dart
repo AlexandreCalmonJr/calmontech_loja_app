@@ -8,29 +8,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-// ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
 
 
 class ProfileController extends GetxController {
   var profileImgPath = ''.obs;
+  var profileImagemLink = ''.obs;
   var isloading = false.obs;
-
+  // textfield
   var nameController = TextEditingController();
   var passwordController = TextEditingController();
   var newpasswordController = TextEditingController();
   var oldpasswordController = TextEditingController();
-
-  var emailController = TextEditingController();
-  var phoneController = TextEditingController();
-  var addressController = TextEditingController();
-  var profileImagemLink = '';
-
+  
   
 
   changeImage(context) async {
     try {
-      final img = await ImagePicker().pickImage(source: ImageSource.gallery);
+      final img = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality:50) ;
 
       if (
         img == null
@@ -45,53 +40,63 @@ class ProfileController extends GetxController {
   }
   
   uploadProfileImage() async {
+  try {
     var filename = basename(profileImgPath.value);
     var destination = 'images/${auth.currentUser!.uid}/$filename';
     Reference ref = FirebaseStorage.instance.ref().child(destination);
     await ref.putFile(File(profileImgPath.value));
-    profileImagemLink = await ref.getDownloadURL();
-    
-    
+    profileImagemLink.value = await ref.getDownloadURL();
+  } catch (e) {
+    print("Erro ao carregar imagem: $e");
   }
+}
+
 
   updateProfile({
-    name,
-    password,
-    imgUrl,
-  }) async {
-    isloading.value = true;
+  required String name,
+  required String password,
+  required String img,
+}) async {
+  try {
+    isloading.value = true;  // Inicia o carregamento
+
     var store = firestore.collection(usersCollection).doc(auth.currentUser!.uid);
+
+    // Atualiza os dados no Firestore com a opção de mesclar (merge: true)
     await store.set({
       'name': name,
       'password': password,
-      'img': imgUrl,
-    },
-    SetOptions(merge: true)
+      'img': img,
+    }, SetOptions(merge: true));
 
-    );
-    isloading(false);
+    isloading.value = false;  // Finaliza o carregamento
+  } catch (e) {
+    isloading.value = false;  // Finaliza o carregamento em caso de erro
+    print("Erro ao atualizar o perfil: $e");
   }
+}
 
-  changeAuthPassword({
-    email,
-    password,
-    newpassword
-  }
-  ) async {
-    final cred = EmailAuthProvider.credential(
-      email: email, password: password
-    );
-    await auth.currentUser!.reauthenticateWithCredential(cred).then((value){
+
+  // Função para alterar senha
+changeAuthPassword({
+  required String email,
+  required String password,
+  required String newpassword,
+}) async {
+  try {
+    final cred = EmailAuthProvider.credential(email: email, password: password);
+    await auth.currentUser!.reauthenticateWithCredential(cred).then((value) {
       auth.currentUser!.updatePassword(newpassword);
-    }).catchError((error){
+      Get.snackbar("Sucesso", "Senha alterada com sucesso");
+    }).catchError((error) {
       print(error.toString());
+      Get.snackbar("Erro", "Erro ao alterar senha: $error");
     });
-
-
-
+  } catch (e) {
+    print("Erro ao alterar senha: $e");
+    Get.snackbar("Erro", "Erro ao alterar senha: $e");
   }
-
-
+}
 
 
 }

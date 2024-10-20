@@ -20,64 +20,61 @@ class ProfileScreen extends StatelessWidget {
     return bgWidget(
         child: Scaffold(
             body: StreamBuilder(
-                // ignore: deprecated_member_use                
                 stream: FirestoreServices.getUser(auth.currentUser!.uid),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasError) {
+                  // Verificação de erros e estados de carregamento
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
                       child: CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation(redColor),
                       ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return const Center(
+                      child: Text("Ocorreu um erro ao carregar os dados."),
+                    );
+                  } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const Center(
+                      child: Text("Nenhum dado encontrado."),
                     );
                   } else {
                     var data = snapshot.data!.docs[0];
                     return SafeArea(
                         child: Column(
                       children: [
-                        //edit profile button
+                        // Botão de editar perfil
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: const Align(
-                                  alignment: Alignment.topRight,
-                                  child: Icon(Icons.edit, color: whiteColor))
-                              .onTap(() {
+                            alignment: Alignment.topRight,
+                            child: Icon(Icons.edit, color: whiteColor),
+                          ).onTap(() {
+                            // Configurando o controlador com os dados do Firestore
                             controller.nameController.text = "${data['name']}";
-                            
-                            Get.to(() => EditProfileScreen(
-                                  data: data,
-                                ));
+                            Get.to(() => EditProfileScreen(data: data));
                           }),
                         ),
-
-// user detalis action
+                        // Detalhes do usuário
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),                         
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           child: Row(
                             children: [
-                              //user image
+                              // Imagem do usuário
                               data['img'] == ''
                                   ? Image.asset(
                                       imgProfile2,
-                                      width: 100,
+                                      width: 80,
                                       fit: BoxFit.cover,
-                                    )
-                                      .box
-                                      .roundedSM                                     
-                                      .clip(Clip.antiAlias)
-                                      .make()
+                                    ).box.roundedSM.clip(Clip.antiAlias).make()
                                   : Image.network(
                                       data['img'],
-                                      width: 100,
+                                      width: 80,
                                       fit: BoxFit.cover,
-                                    )
-                                      .box
-                                      .roundedFull
-                                      .clip(Clip.antiAlias)
-                                      .make(),
-                              15.widthBox,
+                                    ).box.roundedFull.clip(Clip.antiAlias).make(),
+                              20.widthBox,
                               Expanded(
-                                  child: Column(                                   
+                                  child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   "${data['name']}"
@@ -96,12 +93,13 @@ class ProfileScreen extends StatelessWidget {
                                     Get.offAll(() => const LoginScreen());
                                   },
                                   style: OutlinedButton.styleFrom(
-                                      side:
-                                          const BorderSide(color: whiteColor)),
-                                  child: logout.text.make())
+                                      side: const BorderSide(color: whiteColor)),
+                                  child: logout.text.make()),
                             ],
                           ),
                         ),
+                        20.heightBox,
+                        // Cartões de detalhes do usuário
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -111,7 +109,7 @@ class ProfileScreen extends StatelessWidget {
                                 width: context.screenWidth / 3.2),
                             detailsCard(
                                 count: data['wishlist_count'],
-                                title: "in your whishlist",
+                                title: "in your wishlist",
                                 width: context.screenWidth / 3.2),
                             detailsCard(
                                 count: data['order_count'],
@@ -120,40 +118,43 @@ class ProfileScreen extends StatelessWidget {
                           ],
                         ),
                         4.heightBox,
-                        ListView.separated(
-                          shrinkWrap: true,
-                          separatorBuilder: (context, index) {
-                            return const Divider(color: lightGrey);
-                          },
-                          itemCount: profileButtonsList.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return ListTile(
-                              leading: Image.asset(
-                                profileButtonsIcon[index],
-                                width: 22,
-                              )
-                                  .box
-                                  .rounded
-                                  .padding(const EdgeInsets.all(8))
-                                  .make(),
-                              title: profileButtonsList[index]
-                                  .text
-                                  .fontFamily(semibold)
-                                  .color(darkFontGrey)
-                                  .make(),
-                            );
-                          },
-                        )
-                            .box
-                            .white
-                            .rounded
-                            .margin(const EdgeInsets.all(12))
-                            .padding(const EdgeInsets.symmetric(horizontal: 16))
-                            .shadowSm
-                            .make()
-                            .box
-                            .color(redColor)
-                            .make(),
+                        // Lista de opções do perfil
+                        Expanded(
+                          child: ListView.separated(
+                            shrinkWrap: true,
+                            separatorBuilder: (context, index) {
+                              return const Divider(color: lightGrey);
+                            },
+                            itemCount: profileButtonsList.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return ListTile(
+                                leading: Image.asset(
+                                  profileButtonsIcon[index],
+                                  width: 22,
+                                )
+                                    .box
+                                    .rounded
+                                    .padding(const EdgeInsets.all(8))
+                                    .make(),
+                                title: profileButtonsList[index]
+                                    .text
+                                    .fontFamily(semibold)
+                                    .color(darkFontGrey)
+                                    .make(),
+                              );
+                            },
+                          )
+                              .box
+                              .white
+                              .rounded
+                              .margin(const EdgeInsets.all(12))
+                              .padding(const EdgeInsets.symmetric(horizontal: 16))
+                              .shadowSm
+                              .make()
+                              .box
+                              .color(redColor)
+                              .make(),
+                        ),
                       ],
                     ));
                   }
