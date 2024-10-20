@@ -9,32 +9,34 @@ CategoryModel categoryModelFromJson(String str) => CategoryModel.fromJson(json.d
 
 
 class CategoryModel {
-    List<Categoria> categories;
+    List<Category> categories;
 
     CategoryModel({
         required this.categories,
     });
 
     factory CategoryModel.fromJson(Map<String, dynamic> json) => CategoryModel(
-        categories: List<Categoria>.from(json["categorias"].map((x) => Categoria.fromJson(x))),
+        categories: List<Category>.from(json["categories"].map((x) => Category.fromJson(x))),
     );
 
     
 }
 
-class Categoria {
-    String nome;
-    List<String> subcategorias;
+class Category {
+    String name;
+    List<String> subcategories;
 
-    Categoria({
-        required this.nome,
-        required this.subcategorias,
+    Category({
+        required this.name,
+        required this.subcategories,
     });
 
-    factory Categoria.fromJson(Map<String, dynamic> json) => Categoria(
-        nome: json["nome"],
-        subcategorias: List<String>.from(json["subcategorias"].map((x) => x)),
+    factory Category.fromJson(Map<String, dynamic> json) => Category(
+        name: json["name"],
+        subcategories: List<String>.from(json["subcategories"].map((x) => x)),
     );
+
+  
 
     
 }

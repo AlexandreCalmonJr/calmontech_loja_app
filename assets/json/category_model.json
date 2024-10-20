@@ -1,7 +1,7 @@
 {
     "categories": [
         {
-            "name": "Womem Dress",
+            "name": "Women's Dresses",
             "subcategories": [
                 "Weddings & Events",
                 "Blouses & Sets",
@@ -9,7 +9,7 @@
             ]
         },
         {
-            "name": "Men Clothing & Fashion",
+            "name": "Men's Clothing",
             "subcategories": [
                 "Coats & Jackets",
                 "Formal Wear",
@@ -17,7 +17,7 @@
             ]
         },
         {
-            "name": "Computer & Accessories",
+            "name": "Computer Accessories",
             "subcategories": [
                 "Notebook",
                 "Gaming PC",
@@ -25,7 +25,7 @@
             ]
         },
         {
-            "name": "Automobile",
+            "name": "Automobiles",
             "subcategories": [
                 "Parts",
                 "Accessories",
@@ -33,7 +33,7 @@
             ]
         },
         {
-            "name": "Kids & Toys",
+            "name": "Children",
             "subcategories": [
                 "Baby Clothing",
                 "Shoes & Bags",
@@ -49,7 +49,7 @@
             ]
         },
         {
-            "name": "Jewelery",
+            "name": "Jewelry",
             "subcategories": [
                 "Rings",
                 "Necklaces",
@@ -57,7 +57,7 @@
             ]
         },
         {
-            "name": "Cellphone & Tab",
+            "name": "Cell Phones & Tablets",
             "subcategories": [
                 "Smartphones",
                 "Cases & Accessories",

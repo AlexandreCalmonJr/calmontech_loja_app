@@ -80,35 +80,39 @@ class EditProfileScreen extends StatelessWidget {
                                 controller.isloading(true);
 
                                 // Se a imagem foi alterada, faça o upload
-                               // Compactando lógica de verificação da imagem e senha
-if (controller.profileImgPath.isNotEmpty) {
-  await controller.uploadProfileImage();
-} else {
-  controller.profileImagemLink.value = data['img'];  // Correção: Usando .value
-}
+                                // Compactando lógica de verificação da imagem e senha
+                                if (controller.profileImgPath.isNotEmpty) {
+                                  await controller.uploadProfileImage();
+                                } else {
+                                  controller.profileImagemLink.value =
+                                      data['img']; // Correção: Usando .value
+                                }
 
 // Verificação e atualização do perfil
-if (data['password'] == controller.oldpasswordController.text) {
-  await controller.changeAuthPassword(
-    email: data['email'],
-    password: controller.oldpasswordController.text,
-    newpassword: controller.newpasswordController.text,
-  );
+                                if (data['password'] ==
+                                    controller.oldpasswordController.text) {
+                                  await controller.changeAuthPassword(
+                                    email: data['email'],
+                                    password:
+                                        controller.oldpasswordController.text,
+                                    newpassword:
+                                        controller.newpasswordController.text,
+                                  );
 
-  await controller.updateProfile(
-    img: controller.profileImagemLink.value,
-    name: controller.nameController.text,
-    password: controller.newpasswordController.text,
-  );
+                                  await controller.updateProfile(
+                                    img: controller.profileImagemLink.value,
+                                    name: controller.nameController.text,
+                                    password:
+                                        controller.newpasswordController.text,
+                                  );
 
-  VxToast.show(context, msg: "Atualizado");
-} else {
-  VxToast.show(context, msg: "Não Atualizado");
-}
+                                  VxToast.show(context, msg: "Atualizado");
+                                } else {
+                                  VxToast.show(context, msg: "Não Atualizado");
+                                }
 
 // Finalizando carregamento
-controller.isloading(false);
-
+                                controller.isloading(false);
                               }),
                         ),
                 ],

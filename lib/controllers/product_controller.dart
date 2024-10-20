@@ -1,27 +1,29 @@
 import 'package:emart_app/models/category_model.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart';  // Certifique-se de importar isso para usar rootBundle
 import 'package:get/get.dart';
 
-class ProductController extends GetxController{
-  var subcat = [];
+class ProductController extends GetxController {
+  var subcat = <String>[].obs;  // Utilize uma lista observável para reatividade
 
+  getSubcategories(String title) async {
+    subcat.clear();  // Limpa as subcategorias anteriores
+    try {
+      final data = await rootBundle.loadString('lib/services/category_model.json');  // Carrega o JSON
+      var decode = categoryModelFromJson(data);  // Decodifica o JSON
 
-
-  getSubategoria(title) async {
-    subcat.clear();
-    var data = await rootBundle.loadString("lib/services/category_model.json");
-    var decoded = categoryModelFromJson(data);
-    var s = decoded.categories.where((element) => element.nome == title).toList();
-
-    for (var e in s[0].subcategorias){
-      subcat.add(e);
-
+      // Filtra categorias que correspondem ao título fornecido
+      var filteredCategories = decode.categories.where((element) => element.name == title).toList();
+      
+      if (filteredCategories.isNotEmpty) {
+        // Se encontrar categorias, adiciona as subcategorias à lista
+        for (var e in filteredCategories[0].subcategories) {
+          subcat.add(e);
+        }
+      } else {
+        print('Nenhuma subcategoria encontrada para o título: $title');  // Mensagem de erro
+      }
+    } catch (e) {
+      print('Erro ao carregar o arquivo JSON: $e');  // Captura de erro
     }
-    
-    
-
-
-
   }
-
 }
