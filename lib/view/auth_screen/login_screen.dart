@@ -65,6 +65,7 @@ class LoginScreen extends StatelessWidget {
                       // Verifica se o login foi bem-sucedido
                       if (userCredential != null) {
                         // Exibe mensagem de sucesso
+                        // ignore: use_build_context_synchronously
                         VxToast.show(context, msg: loggedin);
 
                         // Redireciona para a tela Home
@@ -72,6 +73,7 @@ class LoginScreen extends StatelessWidget {
                       } else {
                         controller.isLoading(false);
                         // Tratar caso de falha no login, se necessário (opcional)
+                        // ignore: use_build_context_synchronously
                         VxToast.show(context,
                             msg: "Falha no login. Verifique suas credenciais.");
                       }

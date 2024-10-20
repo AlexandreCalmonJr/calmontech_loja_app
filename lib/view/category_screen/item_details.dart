@@ -1,15 +1,19 @@
 import 'package:emart_app/consts/consts.dart';
 import 'package:emart_app/consts/lists.dart';
+import 'package:emart_app/controllers/product_controller.dart';
 import 'package:emart_app/widgets_common/our_button.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ItemDetails extends StatelessWidget {
   final String? title;
-
-  const ItemDetails({super.key, required this.title});
+  final dynamic data;
+  const ItemDetails({super.key, required this.title, required this.data});
 
   @override
   Widget build(BuildContext context) {
+    var controller = Get.find<ProductController>();
+
     return Scaffold(
       backgroundColor: lightGrey,
       appBar: AppBar(
@@ -38,15 +42,23 @@ class ItemDetails extends StatelessWidget {
                   children: [
                     VxSwiper.builder(
                       autoPlay: true,
-                      height: 350,
+                      height:
+                          350.0, // Certifique-se de usar 350.0 em vez de 350
                       aspectRatio: 16 / 9,
-                      itemCount: 3,
+                      viewportFraction:
+                          1.0, // Certifique-se de usar 1.0 em vez de 1
+                      itemCount: data['p_imgs'].length,
                       itemBuilder: (context, index) {
-                        return Image.asset(
-                          imgFc5,
+                        return Image.network(
+                          data["p_imgs"][index],
                           width: double.infinity,
                           fit: BoxFit.cover,
-                        );
+                        )
+                            .box
+                            .roundedSM
+                            .margin(const EdgeInsets.symmetric(horizontal: 8))
+                            .clip(Clip.antiAlias)
+                            .make();
                       },
                     )
                         .box
@@ -58,15 +70,17 @@ class ItemDetails extends StatelessWidget {
                     title!.text.size(16).color(darkFontGrey).make(),
                     10.heightBox,
                     VxRating(
+                      isSelectable: false,
+                      value: double.parse(data['p_rating']),
                       onRatingUpdate: (value) {},
                       normalColor: textfieldGrey,
                       selectionColor: golden,
                       count: 5,
-                      size: 25,
-                      stepInt: true,
+                      maxRating: 5,
                     ),
                     10.heightBox,
-                    "\$30,000"
+                    "${data['p_price']}"
+                        .numCurrency
                         .text
                         .color(redColor)
                         .fontFamily(bold)
@@ -75,111 +89,151 @@ class ItemDetails extends StatelessWidget {
                     10.heightBox,
                     Row(
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            "Seller".text.white.fontFamily(semibold).make(),
-                            5.heightBox,
-                            "John Doe"
-                                .text
-                                .white
-                                .fontFamily(semibold)
-                                .color(darkFontGrey)
-                                .size(16)
-                                .make(),
-                          ],
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              "Seller"
+                                  .text
+                                  .fontFamily(semibold)
+                                  .color(darkFontGrey)
+                                  .make(),
+                              5.heightBox,
+                              "${data['p_seller']}"
+                                  .text
+                                  .fontFamily(semibold)
+                                  .color(darkFontGrey)
+                                  .size(16)
+                                  .make(),
+                            ],
+                          ),
                         ),
                         const CircleAvatar(
                           backgroundColor: Colors.white,
                           child: Icon(
                             Icons.message_rounded,
                             color: darkFontGrey,
-                            size: 20,
+                            size: 20, // Ajustar o tamanho do ícone
                           ),
                         )
                             .box
-                            .height(50)
                             .padding(
-                                const EdgeInsets.symmetric(horizontal: 125))
+                                const EdgeInsets.all(8)) // Reduzi o padding
                             .color(textfieldGrey)
                             .roundedSM
+                            
                             .make(),
                       ],
                     )
                         .box
-                        .height(60)
-                        .padding(const EdgeInsets.symmetric(horizontal: 16))
+                        .height(60) // Altura da caixa externa
+                        .padding(const EdgeInsets.symmetric(
+                            horizontal: 16)) // Padding geral da Row
                         .color(textfieldGrey)
                         .make(),
                     20.heightBox,
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 100,
-                              child: "Color:".text.color(textfieldGrey).make(),
-                            ),
-                            Row(
-                              children: List.generate(
-                                5,
-                                (index) => VxBox()
-                                    .size(40, 40)
-                                    .roundedFull
-                                    .color(Vx.randomPrimaryColor)
-                                    .margin(const EdgeInsets.symmetric(
-                                        horizontal: 4))
+                    Obx(
+                      () => Column(
+                        children: [
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 100,
+                                child:
+                                    "Color:".text.color(textfieldGrey).make(),
+                              ),
+                              Row(
+                                children: List.generate(
+                                  data['p_colors'].length,
+                                  (index) => Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      VxBox()
+                                          .size(40, 40)
+                                          .roundedFull
+                                          .color(Color(data['p_colors'][index])
+                                              .withOpacity(1.0))
+                                          .margin(const EdgeInsets.symmetric(
+                                              horizontal: 4))
+                                          .make()
+                                          .onTap(() {
+                                        controller.changeColorIndex(index);
+                                      }),
+                                      Visibility(
+                                          visible: index ==
+                                              controller.colorIndex.value,
+                                          child: const Icon(
+                                            Icons.done,
+                                            color: Colors.white,
+                                            size: 20,
+                                          ))
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ).box.padding(const EdgeInsets.all(8)).make(),
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 100,
+                                child: "Quantidade:"
+                                    .text
+                                    .color(textfieldGrey)
                                     .make(),
                               ),
-                            ),
-                          ],
-                        ).box.padding(const EdgeInsets.all(8)).make(),
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 100,
-                              child: "Quantidade:"
+                              Obx(
+                                () => Row(
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        controller.decreaseQuantity();
+                                        controller.calculateTotalPrice(
+                                            int.parse(data['p_price']));
+                                      },
+                                      icon: const Icon(Icons.remove),
+                                    ),
+                                    controller.quantity.value.text
+                                        .size(8)
+                                        .color(darkFontGrey)
+                                        .bold
+                                        .make(),
+                                    IconButton(
+                                      onPressed: () {
+                                        controller.increaseQuantity(
+                                            int.parse(data['p_quantity']));
+                                        controller.calculateTotalPrice(
+                                            int.parse(data['p_price']));
+                                      },
+                                      icon: const Icon(Icons.add),
+                                    ),
+                                    "(${data['p_quantity']})"
+                                        .text
+                                        .color(textfieldGrey)
+                                        .make(),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ).box.padding(const EdgeInsets.all(8)).make(),
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 100,
+                                child:
+                                    "Preço:".text.color(textfieldGrey).make(),
+                              ),
+                              "${controller.totalPrice.value}"
                                   .text
-                                  .color(textfieldGrey)
+                                  .color(redColor)
+                                  .size(8)
+                                  .fontFamily(bold)
                                   .make(),
-                            ),
-                            Row(
-                              children: [
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.remove),
-                                ),
-                                "0"
-                                    .text
-                                    .size(8)
-                                    .color(darkFontGrey)
-                                    .bold
-                                    .make(),
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.add),
-                                ),
-                                "(0 quanti)".text.color(textfieldGrey).make(),
-                              ],
-                            ),
-                          ],
-                        ).box.padding(const EdgeInsets.all(8)).make(),
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 100,
-                              child: "Preço:".text.color(textfieldGrey).make(),
-                            ),
-                            "\$0,00"
-                                .text
-                                .color(redColor)
-                                .size(8)
-                                .fontFamily(bold)
-                                .make(),
-                          ],
-                        ).box.padding(const EdgeInsets.all(8)).make(),
-                      ],
-                    ).box.white.shadowSm.make(),
+                            ],
+                          ).box.padding(const EdgeInsets.all(8)).make(),
+                        ],
+                      ).box.white.shadowSm.make(),
+                    ),
                     10.heightBox,
                     "Descrição"
                         .text
@@ -187,7 +241,7 @@ class ItemDetails extends StatelessWidget {
                         .fontFamily(semibold)
                         .make(),
                     10.heightBox,
-                    "Descrição do Item em venda"
+                    "${data['p_desc']}"
                         .text
                         .color(darkFontGrey)
                         .fontFamily(semibold)
@@ -212,47 +266,44 @@ class ItemDetails extends StatelessWidget {
                         .size(16)
                         .color(darkFontGrey)
                         .make(),
-                        10.heightBox,
-                        SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: List.generate(
-                                  6,
-                                  (index) => Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Image.asset(
-                                        imgP1,
-                                        width: 150,
-                                        fit: BoxFit.cover,
-                                      ),
-                                      10.heightBox,
-                                      "Laptop 4GB/64GB"
-                                          .text
-                                          .fontFamily(semibold)
-                                          .color(darkFontGrey)
-                                          .make(),
-                                      10.heightBox,
-                                      "\$600"
-                                          .text
-                                          .color(redColor)
-                                          .fontFamily(bold)
-                                          .size(16)
-                                          .make(),
-                                    ],
-                                  )
-                                      .box
-                                      .white
-                                      .margin(const EdgeInsets.symmetric(
-                                          horizontal: 4))
-                                      .rounded
-                                      .padding(const EdgeInsets.all(8))
-                                      .make(),
-                                ),
+                    10.heightBox,
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: List.generate(
+                          6,
+                          (index) => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                imgP1,
+                                width: 150,
+                                fit: BoxFit.cover,
                               ),
-                            )
-
+                              10.heightBox,
+                              "Laptop 4GB/64GB"
+                                  .text
+                                  .fontFamily(semibold)
+                                  .color(darkFontGrey)
+                                  .make(),
+                              10.heightBox,
+                              "\$600"
+                                  .text
+                                  .color(redColor)
+                                  .fontFamily(bold)
+                                  .size(16)
+                                  .make(),
+                            ],
+                          )
+                              .box
+                              .white
+                              .margin(const EdgeInsets.symmetric(horizontal: 4))
+                              .rounded
+                              .padding(const EdgeInsets.all(8))
+                              .make(),
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),

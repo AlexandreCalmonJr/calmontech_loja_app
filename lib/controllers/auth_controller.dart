@@ -25,6 +25,7 @@ class AuthController extends GetxController with StateMixin<User> {
       );
     } on FirebaseAuthException {
       // Exibe a mensagem de erro no toast
+      // ignore: use_build_context_synchronously
       VxToast.show(context, msg: "Falha no login. Verifique suas credenciais.");
     }
 

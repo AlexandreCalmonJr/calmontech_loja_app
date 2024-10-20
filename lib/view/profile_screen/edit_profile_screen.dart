@@ -106,8 +106,10 @@ class EditProfileScreen extends StatelessWidget {
                                         controller.newpasswordController.text,
                                   );
 
+                                  // ignore: use_build_context_synchronously
                                   VxToast.show(context, msg: "Atualizado");
                                 } else {
+                                  // ignore: use_build_context_synchronously
                                   VxToast.show(context, msg: "Não Atualizado");
                                 }
 

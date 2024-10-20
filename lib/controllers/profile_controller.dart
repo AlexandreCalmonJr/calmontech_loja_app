@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -47,6 +49,8 @@ class ProfileController extends GetxController {
     await ref.putFile(File(profileImgPath.value));
     profileImagemLink.value = await ref.getDownloadURL();
   } catch (e) {
+    // ignore: duplicate_ignore
+    // ignore: avoid_print
     print("Erro ao carregar imagem: $e");
   }
 }

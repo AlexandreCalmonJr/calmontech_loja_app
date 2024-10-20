@@ -139,16 +139,19 @@ class _SignupScreenState extends State<SignupScreen> {
                             );
               
                             // Exibe mensagem de sucesso e navega para a tela Home
+                            // ignore: use_build_context_synchronously
                             VxToast.show(context, msg: loggedin);
                             Get.offAll(() => const Home());
                           } else {
                             // Trate o caso onde o signInResult é null
+                            // ignore: use_build_context_synchronously
                             VxToast.show(context, msg: "Falha ao criar a conta.");
                           }
                         } catch (e) {
                           controller.isLoading.value = false;
                           // Em caso de erro, faz logout e exibe mensagem
                           await auth.signOut();
+                          // ignore: use_build_context_synchronously
                           VxToast.show(context, msg: e.toString());
                         }
                       }
