@@ -1,6 +1,7 @@
 import 'package:emart_app/consts/consts.dart';
 import 'package:emart_app/consts/lists.dart';
 import 'package:emart_app/controllers/product_controller.dart';
+import 'package:emart_app/view/chat_screen/chat_screen.dart';
 import 'package:emart_app/widgets_common/our_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -122,8 +123,10 @@ class ItemDetails extends StatelessWidget {
                               Icons.message_rounded,
                               color: darkFontGrey,
                               size: 20, // Ajustar o tamanho do ícone
-                            ),
-                          )
+                            )
+                          ).onTap(() {
+                            Get.to(()=> const ChatScreen());
+                          })
                               .box
                               .padding(
                                   const EdgeInsets.symmetric(

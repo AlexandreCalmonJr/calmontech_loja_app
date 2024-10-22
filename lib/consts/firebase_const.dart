@@ -10,3 +10,7 @@ User? get user => auth.currentUser;
 const usersCollection = "users";
 const productsCollection = "products";
 const cartCollection = 'cart';
+const ordersCollection = 'orders';
+const addressCollection = 'address';
+const chatsCollection = 'chats';
+const messagesCollection = 'messages';
