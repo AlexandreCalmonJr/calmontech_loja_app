@@ -125,7 +125,10 @@ class ItemDetails extends StatelessWidget {
                               size: 20, // Ajustar o tamanho do ícone
                             )
                           ).onTap(() {
-                            Get.to(()=> const ChatScreen());
+                            Get.to(()=> const ChatScreen(),
+                            transition: Transition.rightToLeftWithFade,
+                            arguments: [data['p_seller'], data['vendor_id']],
+                            );
                           })
                               .box
                               .padding(
