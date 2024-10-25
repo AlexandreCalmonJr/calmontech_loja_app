@@ -23,51 +23,62 @@ class ChatScreen extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Obx(()=>
-               Expanded(
-                child: StreamBuilder(
-                    stream: FirestoreServices.getChatMessages(
-                        controller.chatDocId.toString()),
-                    builder: (
-                      BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot,
-                    ) {
-                      if (!snapshot.hasData) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.data!.docs.isEmpty) {
-                        return const Center(child: Text('Send messages'));
-                      } else {
-                        return ListView(
-                          children: snapshot.data!.docs.mapIndexed((currentValue, index){
-                            return senderBubble();
-                          }).toList(),                      
-                        );
-                      }
-                    }),
-              ),
-            ),
+            // Usando Obx corretamente para observar o estado de isLoading
+            Obx(() => controller.isLoading.value
+                ? const Center(child: CircularProgressIndicator())
+                : Expanded(
+                    flex: 1,
+                    child: StreamBuilder(
+                      stream: FirestoreServices.getChatMessages(
+                          controller.chatDocId.toString()),
+                      builder: (
+                        BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot,
+                      ) {
+                        if (!snapshot.hasData) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (snapshot.data!.docs.isEmpty) {
+                          return const Center(child: Text('Send messages'));
+                        } else {
+                          return ListView(
+                            children: snapshot.data!.docs
+                                .mapIndexed((currentValue, index) {
+                              var data = snapshot.data!.docs[index];
+                              return senderBubble(data);
+                            }).toList(),
+                          );
+                        }
+                      },
+                    ),
+                  )),
             10.heightBox,
             Row(
               children: [
                 Expanded(
-                    child: TextFormField(
-                        controller: controller.msgController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          focusedBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(
-                            color: textfieldGrey,
-                          )),
-                          hintText: 'Type a message',
-                        ))),
+                  child: TextFormField(
+                    controller: controller.msgController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                        color: textfieldGrey,
+                      )),
+                      hintText: 'Type a message',
+                    ),
+                  ),
+                ),
                 const SizedBox(width: 10),
                 IconButton(
-                    onPressed: () {
+                  onPressed: () {
+                    if (controller.msgController.text.isNotEmpty) {
                       controller.sendMsg(controller.msgController.text);
                       controller.msgController.clear();
-                    },
-                    icon: const Icon(Icons.send))
+                    }
+                  },
+                  icon: const Icon(Icons.send),
+                )
               ],
             )
                 .box

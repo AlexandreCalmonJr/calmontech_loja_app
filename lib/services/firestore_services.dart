@@ -19,7 +19,16 @@ class FirestoreServices{
 
   static getChatMessages(docId)
   {
-    return firestore.collection(chatsCollection).doc(docId).collection(messagesCollection).orderBy('created_on', descending: true).snapshots();
+    return firestore
+    .collection(chatsCollection)
+    .doc(docId)
+    .collection(messagesCollection)
+    .orderBy(
+      'created_on', 
+      descending: false
+
+      )
+    .snapshots();
   }
 
   }
