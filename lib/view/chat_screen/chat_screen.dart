@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emart_app/consts/consts.dart';
 import 'package:emart_app/controllers/chats_controller.dart';
-import 'package:emart_app/services/firestore_services.dart';
 import 'package:emart_app/view/chat_screen/components/sender_bubble.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,78 +16,78 @@ class ChatScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: whiteColor,
       appBar: AppBar(
-        title: const Text('Chat'),
+        title: Text('Chat com ${controller.friendName}'),
         centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            // Usando Obx corretamente para observar o estado de isLoading
-            Obx(() => controller.isLoading.value
-                ? const Center(child: CircularProgressIndicator())
-                : Expanded(
-                    flex: 1,
-                    child: StreamBuilder(
-                      stream: FirestoreServices.getChatMessages(
-                          controller.chatDocId.toString()),
-                      builder: (
-                        BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot,
-                      ) {
-                        if (!snapshot.hasData) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        } else if (snapshot.data!.docs.isEmpty) {
-                          return const Center(child: Text('Send messages'));
-                        } else {
-                          return ListView(
-                            children: snapshot.data!.docs
-                                .mapIndexed((currentValue, index) {
-                              var data = snapshot.data!.docs[index];
-                              return senderBubble(data);
-                            }).toList(),
-                          );
-                        }
-                      },
-                    ),
-                  )),
-            10.heightBox,
-            Row(
+        child: Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (controller.chatDocId == null) {
+            return const Center(child: Text('Carregando chat...'));
+          } else {
+            return Column(
               children: [
                 Expanded(
-                  child: TextFormField(
-                    controller: controller.msgController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(
-                        color: textfieldGrey,
-                      )),
-                      hintText: 'Type a message',
-                    ),
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection(chatsCollection)
+                        .doc(controller.chatDocId)
+                        .collection(messagesCollection)
+                        .orderBy('create_on', descending: true)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return const Center(child: Text('Sem mensagens.'));
+                      }
+                      return ListView.builder(
+                        reverse: true,
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          var data = snapshot.data!.docs[index];
+                          return Align(
+                              alignment: data['uid'] ==
+                                      FirebaseAuth.instance.currentUser!.uid
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
+                              child: senderBubble(
+                                data,
+                                data['uid'] ==
+                                    FirebaseAuth.instance.currentUser!.uid,
+                              ));
+                        },
+                      );
+                    },
                   ),
                 ),
-                const SizedBox(width: 10),
-                IconButton(
-                  onPressed: () {
-                    if (controller.msgController.text.isNotEmpty) {
-                      controller.sendMsg(controller.msgController.text);
-                      controller.msgController.clear();
-                    }
-                  },
-                  icon: const Icon(Icons.send),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: controller.msgController,
+                        decoration: InputDecoration(
+                          hintText: 'Digite uma mensagem...',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.send),
+                      onPressed: () =>
+                          controller.sendMsg(controller.msgController.text),
+                    ),
+                  ],
                 )
               ],
-            )
-                .box
-                .height(90)
-                .padding(const EdgeInsets.all(12))
-                .margin(const EdgeInsets.only(bottom: 8))
-                .make(),
-          ],
-        ),
+            );
+          }
+        }),
       ),
     );
   }

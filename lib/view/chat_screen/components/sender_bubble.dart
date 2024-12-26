@@ -1,44 +1,51 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emart_app/consts/consts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
 
-Widget senderBubble(DocumentSnapshot data) {
-  // Verificando se o campo 'created_on' existe e é do tipo Timestamp
-  var t = (data['created_on'] != null && data['created_on'] is Timestamp) 
-      ? (data['created_on'] as Timestamp).toDate() 
+Widget senderBubble(DocumentSnapshot data, bool isCurrentUser) {
+  var t = (data['create_on'] != null && data['create_on'] is Timestamp)
+      ? (data['create_on'] as Timestamp).toDate()
       : DateTime.now();
 
   var time = intl.DateFormat("h:mma").format(t);
+  String msg = data.data().toString().contains('msg') ? data['msg'] : "Mensagem não disponível";
 
-  // Verifica se o campo 'msg' existe antes de tentar acessá-lo
-  String msg = data.data().toString().contains('msg')
-      ? data['msg']
-      : "Mensagem não disponível"; // Mensagem padrão caso não exista o campo
-
-  // Log para verificar a mensagem no console
-  print("Mensagem recebida: ${data['msg']}");
-  print("Hora da mensagem: $time");
-
-
-  return Container(
-    padding: const EdgeInsets.all(12), // Ajuste o padding conforme necessário
-    margin: const EdgeInsets.only(bottom: 8),
-    decoration: const BoxDecoration(
-      color: redColor,
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(20),
-        topRight: Radius.circular(20),
-        bottomLeft: Radius.circular(20),
+  return Directionality(
+    textDirection: data['uid'] == FirebaseAuth.instance.currentUser!.uid ? TextDirection.rtl : TextDirection.ltr,
+    child: Container(
+      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      decoration: BoxDecoration(
+        color:  data['uid'] == FirebaseAuth.instance.currentUser!.uid ? Colors.blue : Colors.grey,
+        borderRadius: BorderRadius.only(
+          topLeft: const Radius.circular(20),
+          topRight: const Radius.circular(20),
+          bottomLeft: isCurrentUser ? const Radius.circular(20) : const Radius.circular(0),
+          bottomRight: isCurrentUser ? const Radius.circular(0) : const Radius.circular(20),
+        ),
       ),
-    ),
-    child: Column(
-      // Alinhar o texto corretamente
-      children: [
-        "${data['msg']}".text.black.size(16).make(), // Tamanho do texto ajustado
-        10.heightBox,
-        time.text.color(whiteColor.withOpacity(0.5)).make(), // Exibir a hora formatada
-      ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            msg,
+            style: TextStyle(
+              color: isCurrentUser ? whiteColor : Colors.black,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            time,
+            style: TextStyle(
+              color: isCurrentUser ? whiteColor.withOpacity(0.7) : Colors.black.withOpacity(0.7),
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
     ),
   );
 }

@@ -73,6 +73,9 @@ const womenClothings = "Women Clothing",
 
 const whislist = "My Wishlist", orders = "My Orders", messages = "Messages", oldpass = "Senha Antiga", newpass = "Nova Senha";
        
+// payment methoads strings
+
+const paypal = "Paypal", stripe = "Stripe", cod = "Cash of Delivery";
 
 
 

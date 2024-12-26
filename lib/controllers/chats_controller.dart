@@ -1,5 +1,3 @@
-// ignore_for_file: unused_element
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emart_app/consts/firebase_const.dart';
 import 'package:emart_app/controllers/home_controller.dart';
@@ -21,65 +19,51 @@ class ChatsController extends GetxController {
   var currentId = auth.currentUser!.uid;
   var msgController = TextEditingController();
   dynamic chatDocId;
-  var chatDoc = FirebaseFirestore.instance.collection(chatsCollection).doc();
   var isLoading = false.obs;
 
   // Função para obter ou criar o ID do chat
-  getChatId() async {
+  Future<void> getChatId() async {
     isLoading.value = true;
-    await chats
-        .where('users', isEqualTo: {
-          friendId: null,
-          currentId: null,
-        })
-        .limit(1)
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-          if (querySnapshot.docs.isNotEmpty) {
-            chatDocId = querySnapshot.docs.single.id;
-          } else {
-            chats.add({
-              'create_on': null,
-              'last_msg': '',
-              'users': {
-                friendId: null,
-                currentId: null,
-              },
-              'toId': friendId,
-              'fromId': currentId,
-              'friend_name': friendName,
-              'sender_name': senderName,
-            }).then((value) {
-              {
-                chatDocId = value.id;
-              }
-            });
-          }
+    try {
+      var querySnapshot = await chats
+          .where('users', arrayContainsAny: [friendId, currentId])
+          .limit(1)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        chatDocId = querySnapshot.docs.single.id;
+      } else {
+        var newChatDoc = await chats.add({
+          'create_on': FieldValue.serverTimestamp(),
+          'last_msg': '',
+          'users': [friendId, currentId],
+          'toId': friendId,
+          'fromId': currentId,
+          'friend_name': friendName,
+          'sender_name': senderName,
         });
-    isLoading.value = false;
+        chatDocId = newChatDoc.id;
+      }
+    } catch (e) {
+      print('Erro ao obter ou criar chat: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   // Função para enviar mensagens
-  sendMsg(String? msg) async {
-    if (msg != null && msg.trim().isNotEmpty && chatDocId != null) {
+  Future<void> sendMsg(String msg) async {
+    if (msg.trim().isNotEmpty && chatDocId != null) {
       try {
-        // Atualiza o documento principal do chat com a última mensagem
         await chats.doc(chatDocId).update({
           'create_on': FieldValue.serverTimestamp(),
           'last_msg': msg,
-          'toId': friendId,
-          'fromId': currentId
         });
-
-        // Adiciona a mensagem à subcoleção de mensagens
         await chats.doc(chatDocId).collection(messagesCollection).add({
           'create_on': FieldValue.serverTimestamp(),
           'msg': msg,
           'uid': currentId,
           'toId': friendId,
         });
-
-        // Limpa o campo de texto após o envio
         msgController.clear();
       } catch (e) {
         print('Erro ao enviar mensagem: $e');

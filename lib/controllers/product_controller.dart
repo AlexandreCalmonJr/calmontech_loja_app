@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emart_app/consts/consts.dart';
 import 'package:emart_app/models/category_model.dart';
 import 'package:flutter/services.dart';  // Certifique-se de importar isso para usar rootBundle
@@ -7,7 +8,8 @@ class ProductController extends GetxController {
   var quantity = 0.obs;
   var colorIndex = 0.obs;
   var totalPrice = 0.obs;
-  var subcat = <String>[].obs;  // Utilize uma lista observável para reatividade
+  var subcat = <String>[].obs; // Utilize uma lista observável para reatividade
+  var isFav = false.obs;
 
   getSubcategories(String title) async {
     subcat.clear();  // Limpa as subcategorias anteriores
@@ -88,9 +90,46 @@ class ProductController extends GetxController {
     colorIndex.value = 0;
   }
 
+  addToWishlist(String productId) async {
+  try {
+    await firestore
+        .collection(productsCollection)
+        .doc(auth.currentUser!.uid)
+        .collection('items')
+        .doc('wishlist') // Documento específico para lista de desejos
+        .set({
+      'p_whishlist': FieldValue.arrayUnion([productId]) // Adiciona o ID do produto
+    }, SetOptions(merge: true));
+    print("Produto $productId adicionado à lista de desejos.");
+  } catch (e) {
+    print("Erro ao adicionar à lista de desejos: $e");
+  }
+}
 
-
-
+removeToWishlist(String productId) async {
+  try {
+    await firestore
+        .collection(productsCollection)
+        .doc(auth.currentUser!.uid)
+        .collection('items')
+        .doc('wishlist') // Documento específico para lista de desejos
+        .set({
+      'p_whishlist': FieldValue.arrayRemove([productId]) // Remove o ID do produto
+    }, SetOptions(merge: true));
+    print("Produto $productId removido da lista de desejos.");
+  } catch (e) {
+    print("Erro ao remover da lista de desejos: $e");
+  }
+}
+ 
+ checkIffav(data) async {
+  if(data['p_whilist'].contains(auth.currentUser!.uid)){
+    isFav(true);
+  }
+  else {
+    isFav(false);
+  }
+ }
 
 
 
